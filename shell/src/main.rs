@@ -12,14 +12,13 @@ mod demo;
 mod hud;
 mod input;
 mod rig;
-mod sim;
 mod view;
 
-use sim::level::Level;
-use sim::player::Input as SimInput;
+use tarnished_sim::level::Level;
+use tarnished_sim::player::Input as SimInput;
 
 #[derive(Resource)]
-pub struct Sim(pub sim::World);
+pub struct Sim(pub tarnished_sim::World);
 
 /// Input accumulated since the last simulation tick. Button edges are OR-ed in
 /// so a tap shorter than a tick is never lost.
@@ -78,10 +77,10 @@ Run it from the project folder, and bake the animations first with:
             }),
             ..default()
         }))
-        .insert_resource(Time::<Fixed>::from_hz(sim::data::TICK_HZ))
+        .insert_resource(Time::<Fixed>::from_hz(tarnished_sim::data::TICK_HZ))
         .insert_resource(ClearColor(Color::srgb(0.07, 0.08, 0.1)))
         .insert_resource(clips)
-        .insert_resource(Sim(sim::World::new(Level::arena())))
+        .insert_resource(Sim(tarnished_sim::World::new(Level::arena())))
         .insert_resource(Options { show_iframes: true, show_help: true })
         .init_resource::<Pending>()
         .init_resource::<Rendered>()
@@ -147,5 +146,5 @@ fn interpolate(sim: Res<Sim>, time: Res<Time<Fixed>>, mut rendered: ResMut<Rende
     let alpha = if rendered.prev_pos.distance(player.pos) > 3.0 { 1.0 } else { alpha };
     rendered.alpha = alpha;
     rendered.pos = rendered.prev_pos.lerp(player.pos, alpha);
-    rendered.yaw = rendered.prev_yaw + sim::angle_diff(rendered.prev_yaw, player.yaw) * alpha;
+    rendered.yaw = rendered.prev_yaw + tarnished_sim::angle_diff(rendered.prev_yaw, player.yaw) * alpha;
 }

@@ -4867,6 +4867,14 @@ name = "tarnished"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "tarnished-sim",
+]
+
+[[package]]
+name = "tarnished-sim"
+version = "0.1.0"
+dependencies = [
+ "bevy_math",
 ]
 
 [[package]]

@@ -4,7 +4,7 @@ use bevy::input::mouse::AccumulatedMouseMotion;
 use bevy::prelude::*;
 use bevy::window::{CursorGrabMode, CursorOptions};
 
-use crate::sim::{angle_diff, dir_of, yaw_of};
+use tarnished_sim::{angle_diff, dir_of, yaw_of};
 use crate::{Rendered, Sim};
 
 const DISTANCE: f32 = 4.3;

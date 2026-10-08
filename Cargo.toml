@@ -1,13 +1,9 @@
-[package]
-name = "tarnished"
-version = "0.1.0"
-edition = "2021"
-license = "MIT"
+[workspace]
+resolver = "2"
+members = ["sim", "shell"]
+default-members = ["shell"]
 
-[dependencies]
-bevy = "0.19.1"
-
-# Bevy is unusably slow unoptimized; keep our own crate quick to rebuild.
+# Bevy is unusably slow unoptimized; keep our own crates quick to rebuild.
 [profile.dev]
 opt-level = 1
 

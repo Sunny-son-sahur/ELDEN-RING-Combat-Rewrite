@@ -3,7 +3,7 @@
 
 use std::f32::consts::{FRAC_PI_2, FRAC_PI_4, PI};
 
-use bevy::math::{Vec2, Vec3};
+use bevy_math::{Vec2, Vec3};
 
 use super::data::*;
 use super::level::Level;

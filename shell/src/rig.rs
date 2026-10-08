@@ -5,8 +5,8 @@
 use bevy::prelude::*;
 
 use crate::anim::{vec3, Clips};
-use crate::sim::data::*;
-use crate::sim::player::{Player, State};
+use tarnished_sim::data::*;
+use tarnished_sim::player::{Player, State};
 use crate::{Options, Rendered, Sim};
 
 const ARMOUR: Color = Color::srgb(0.36, 0.38, 0.43);

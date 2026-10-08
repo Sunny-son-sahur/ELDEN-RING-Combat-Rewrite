@@ -2,9 +2,9 @@
 
 use bevy::prelude::*;
 
-use crate::sim::data::*;
-use crate::sim::dummy;
-use crate::sim::player::State;
+use tarnished_sim::data::*;
+use tarnished_sim::dummy;
+use tarnished_sim::player::State;
 use crate::demo::Demo;
 use crate::{Options, Sim};
 
@@ -229,7 +229,7 @@ pub fn update(
     }
 }
 
-fn debug_text(world: &crate::sim::World) -> String {
+fn debug_text(world: &tarnished_sim::World) -> String {
     let p = &world.player;
     let state = match p.state {
         State::Ground => {

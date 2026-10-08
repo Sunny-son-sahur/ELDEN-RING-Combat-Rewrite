@@ -1,4 +1,4 @@
-"""Generates src/sim/extracted.rs from unpacked Elden Ring files.
+"""Generates sim/src/extracted.rs from unpacked Elden Ring files.
 
 Inputs (unpacked by the user with UXM / WitchyBND, found through the
 ER_FILES and ER_GAME_DIR environment variables; see tools/paths.py):
@@ -23,7 +23,7 @@ from erfmt import open_bnd
 from skel import fk, qrot
 
 SRC = paths.er_files()
-OUT = Path(__file__).parent.parent / "src" / "sim" / "extracted.rs"
+OUT = Path(__file__).parent.parent / "sim" / "src" / "extracted.rs"
 NEVER = 9999.0
 PACKS = ("c0000_a00_hi", "c0000_a2x", "c0000_a3x", "c0000_a4x", "c0000_a5x")
 

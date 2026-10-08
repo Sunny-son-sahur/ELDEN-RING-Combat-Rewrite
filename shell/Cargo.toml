@@ -1,0 +1,10 @@
+[package]
+name = "tarnished"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "The Bevy shell: feeds the sim input, draws what it says, plays the sounds."
+
+[dependencies]
+bevy = "0.19.1"
+tarnished-sim = { path = "../sim" }

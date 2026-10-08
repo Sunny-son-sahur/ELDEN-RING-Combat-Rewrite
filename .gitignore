@@ -5,6 +5,6 @@ __pycache__/
 /assets/player_anims.bin
 /assets/player_sounds.bin
 /assets/sounds/
-/src/sim/extracted.rs
+/sim/src/extracted.rs
 # Default location for unpacked game files (see README).
 /er-files/

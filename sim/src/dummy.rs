@@ -2,7 +2,7 @@
 //! alternates a telegraphed overhead slam with a low sweep, which is enough to
 //! exercise i-frames, guarding, guard counters and jumping over attacks.
 
-use bevy::math::Vec3;
+use bevy_math::Vec3;
 
 use super::data::{HurtLevel, DT};
 use super::player::Incoming;

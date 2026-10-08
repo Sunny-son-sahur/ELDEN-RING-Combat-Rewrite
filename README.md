@@ -120,7 +120,7 @@ Read from the game's files:
 - Which sounds each animation plays and on which frame, which recordings each
   sound picks from, their volumes, and each weapon's swing-sound offset.
 
-Still estimated (all marked `ESTIMATE` in `src/sim/data.rs`):
+Still estimated (all marked `ESTIMATE` in `sim/src/data.rs`):
 
 - How long the dodge button must be held for a sprint.
 - Stamina regeneration and sprint drain.
@@ -187,7 +187,7 @@ You need Rust, Python 3.10 or newer, and Windows (the tools load the game's
 own decompression DLL).
 
 Generated files are deliberately not in the repository, because they are
-derived from the game: the action table (`src/sim/extracted.rs`), the baked
+derived from the game: the action table (`sim/src/extracted.rs`), the baked
 animations (`assets/player_anims.bin`) and the sounds
 (`assets/player_sounds.bin`, `assets/sounds/`). The project will not compile
 or run until you generate the first two from your own game files. That is one
@@ -253,17 +253,22 @@ python tools/bake_sounds.py
 
 ## Layout
 
+The workspace is two crates: `sim/` holds the whole game with no engine types (it
+depends on nothing but `bevy_math`, so `cargo test -p tarnished-sim` runs headless in
+seconds), and `shell/` is the Bevy app that feeds it input and draws what it says.
+`cargo run` from the project folder runs the shell.
+
 | Path | What it is |
 |---|---|
-| `src/sim/` | The whole game as a pure 60 Hz state machine, with no engine types. |
-| `src/sim/extracted.rs` | Generated action table. Not in the repository; do not edit by hand. |
-| `src/sim/data.rs` | Action types, plus every value that is still an estimate. |
-| `src/sim/player.rs`, `src/sim/dummy.rs`, `src/sim/level.rs` | The player, the sparring dummy and the arena. |
-| `src/sim/tests.rs` | Behaviour tests; run with `cargo test`. |
-| `src/rig.rs`, `src/anim.rs` | The rig, and loading and playing the baked animations. |
-| `src/audio.rs` | Plays the baked sounds as the animations pass their frames. |
-| `src/demo.rs` | The scripted demo, and a test that plays it through without a window. |
-| `src/camera.rs`, `src/input.rs`, `src/hud.rs`, `src/view.rs` | Camera, bindings, HUD, arena and dummy visuals. |
+| `sim/src/` | The whole game as a pure 60 Hz state machine, with no engine types. |
+| `sim/src/extracted.rs` | Generated action table. Not in the repository; do not edit by hand. |
+| `sim/src/data.rs` | Action types, plus every value that is still an estimate. |
+| `sim/src/player.rs`, `sim/src/dummy.rs`, `sim/src/level.rs` | The player, the sparring dummy and the arena. |
+| `sim/src/tests.rs` | Behaviour tests; run with `cargo test`. |
+| `shell/src/rig.rs`, `shell/src/anim.rs` | The rig, and loading and playing the baked animations. |
+| `shell/src/audio.rs` | Plays the baked sounds as the animations pass their frames. |
+| `shell/src/demo.rs` | The scripted demo, and a test that plays it through without a window. |
+| `shell/src/camera.rs`, `shell/src/input.rs`, `shell/src/hud.rs`, `shell/src/view.rs` | Camera, bindings, HUD, arena and dummy visuals. |
 | `tools/setup.py` | Runs the generators below. |
 | `tools/extract.py` | Reads timings, root motion and params; writes `extracted.rs`. |
 | `tools/bake_anims.py` | Decodes the skeletal animations; writes `assets/player_anims.bin`. |
@@ -273,7 +278,7 @@ python tools/bake_sounds.py
 
 ## A note on the data
 
-`src/sim/extracted.rs`, `assets/player_anims.bin`, `assets/player_sounds.bin`
+`sim/src/extracted.rs`, `assets/player_anims.bin`, `assets/player_sounds.bin`
 and `assets/sounds/` are derived from the game's files, so none is committed
 and all are in `.gitignore`. Please keep it that way in forks: share the code,
 and let each person generate the data from the copy of the game they own.

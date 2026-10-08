@@ -1,6 +1,6 @@
 """Generates everything the sandbox needs from your own copy of the game:
 
-  src/sim/extracted.rs      action timings, root motion, weapon data
+  sim/src/extracted.rs      action timings, root motion, weapon data
   assets/player_anims.bin   the baked animations
   assets/player_sounds.bin  which sounds each animation plays, and when
   assets/sounds/            the recordings, converted to Ogg Vorbis

@@ -4,7 +4,7 @@
 
 use std::path::Path;
 
-const GENERATED: &str = "src/sim/extracted.rs";
+const GENERATED: &str = "src/extracted.rs";
 
 fn main() {
     println!("cargo:rerun-if-changed={GENERATED}");

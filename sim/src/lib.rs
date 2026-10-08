@@ -3,7 +3,7 @@
 
 use std::f32::consts::{PI, TAU};
 
-use bevy::math::Vec3;
+use bevy_math::Vec3;
 
 pub mod data;
 pub mod dummy;

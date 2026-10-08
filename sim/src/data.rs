@@ -10,7 +10,7 @@
 //! the player script's shared constants or in engine code, which the
 //! extractor does not read.
 
-use bevy::math::Vec3;
+use bevy_math::Vec3;
 
 use super::extracted;
 pub use super::extracted::{

@@ -1,0 +1,9 @@
+[package]
+name = "tarnished-sim"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "The whole game as a pure 60 Hz state machine, with no engine types."
+
+[dependencies]
+bevy_math = "0.19"

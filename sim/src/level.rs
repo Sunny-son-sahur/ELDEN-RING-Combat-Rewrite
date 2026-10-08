@@ -2,7 +2,7 @@
 //! that rise from it. Enough for ledges, stairs and fall damage without a
 //! physics engine getting between the input and the character.
 
-use bevy::math::{Vec2, Vec3};
+use bevy_math::{Vec2, Vec3};
 
 use super::data::STEP_HEIGHT;
 

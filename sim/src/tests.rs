@@ -2,7 +2,7 @@
 //! extracted from the game (see `extracted.rs`), so these also guard against
 //! the simulation drifting away from the data it is fed.
 
-use bevy::math::{Vec2, Vec3};
+use bevy_math::{Vec2, Vec3};
 
 use super::data::*;
 use super::level::Level;

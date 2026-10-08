@@ -4,8 +4,8 @@ use std::f32::consts::{FRAC_PI_2, TAU};
 
 use bevy::prelude::*;
 
-use crate::sim::data::HurtLevel;
-use crate::sim::dummy::{self, DState, STRIKE, WINDUP};
+use tarnished_sim::data::HurtLevel;
+use tarnished_sim::dummy::{self, DState, STRIKE, WINDUP};
 use crate::Sim;
 
 const DUMMY_IDLE: Color = Color::srgb(0.5, 0.42, 0.3);

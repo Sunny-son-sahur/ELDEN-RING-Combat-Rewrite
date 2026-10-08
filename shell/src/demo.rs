@@ -10,11 +10,11 @@ use bevy::math::{Vec2, Vec3};
 use bevy::prelude::{ButtonInput, KeyCode, Res, ResMut, Resource};
 
 use crate::camera::CamRig;
-use crate::sim::data::*;
-use crate::sim::dummy::{self, DState};
-use crate::sim::level::Level;
-use crate::sim::player::{Button, Input, State};
-use crate::sim::{dir_of, yaw_of, World};
+use tarnished_sim::data::*;
+use tarnished_sim::dummy::{self, DState};
+use tarnished_sim::level::Level;
+use tarnished_sim::player::{Button, Input, State};
+use tarnished_sim::{dir_of, yaw_of, World};
 use crate::{Options, Pending, Sim};
 
 #[derive(Clone, Copy, PartialEq)]
@@ -847,7 +847,7 @@ pub fn drive(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::sim::angle_diff;
+    use tarnished_sim::angle_diff;
 
     /// Plays the whole tour without a window and checks it shows what it says.
     #[test]

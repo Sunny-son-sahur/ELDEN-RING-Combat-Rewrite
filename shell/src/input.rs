@@ -4,8 +4,8 @@ use bevy::prelude::*;
 use bevy::window::{CursorGrabMode, CursorOptions};
 
 use crate::camera::CamRig;
-use crate::sim::data::Load;
-use crate::sim::player::Button;
+use tarnished_sim::data::Load;
+use tarnished_sim::player::Button;
 use crate::{Options, Pending, Sim};
 
 fn merge(button: &mut Button, held: bool, pressed: bool, released: bool) {
