@@ -183,8 +183,16 @@ the dummy hostile, `F1` toggles the i-frame tint, `H` toggles the help overlay,
 
 ## Setup
 
-You need Rust, Python 3.10 or newer, and Windows (the tools load the game's
-own decompression DLL).
+You need Rust, Python 3.10 or newer, and an Oodle library — DCX files are
+Oodle Kraken. On Windows the game's own `oo2core_6_win64.dll` is found from
+`ER_GAME_DIR` automatically; on Linux set `ER_OODLE_LIB` to a native Oodle
+build (the SDK ships one, and plenty of Linux games bundle
+`liboo2corelinux64.9.so`).
+
+On Linux, install the game through Steam (Proton) — `ER_GAME_DIR` probes the
+usual Steam paths and finds it on its own. Step 1's unpackers are Windows
+programs: run them under Wine, or unpack on any machine that can and copy
+the folder over.
 
 Generated files are deliberately not in the repository, because they are
 derived from the game: the action table (`sim/src/extracted.rs`), the baked

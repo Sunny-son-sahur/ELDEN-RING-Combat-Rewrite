@@ -1,6 +1,7 @@
 """Readers for the FromSoftware container formats the extractor needs:
-DCX (Oodle Kraken, via the game's own oo2core DLL) and BND4."""
+DCX (Oodle Kraken) and BND4."""
 import ctypes
+import os
 import struct
 from pathlib import Path
 
@@ -9,16 +10,63 @@ import paths
 _oodle = None
 
 
+def _oodle_candidates():
+    """Where to look for an Oodle library exporting OodleLZ_Decompress.
+
+    ER_OODLE_LIB wins if set (a native Linux/macOS build, or a DLL on
+    Windows). Otherwise the game's own folder: its DLL on Windows, or a
+    native Oodle library beside it (a Proton install carries the DLL, but
+    a native .so is needed to load it on Linux)."""
+    override = os.environ.get("ER_OODLE_LIB")
+    if override:
+        return [Path(override)]
+    game = paths.game_dir()
+    names = ["oo2core_6_win64.dll"]
+    if os.name != "nt":
+        names += [
+            "liboo2corelinux64.9.so",
+            "liboo2corelinux64.8.so",
+            "liboo2corelinux64.7.so",
+            "oo2core_6_win64.so",
+        ]
+    return [game / name for name in names]
+
+
+def _load_oodle():
+    errors = []
+    for path in _oodle_candidates():
+        if not path.exists():
+            continue
+        try:
+            if os.name == "nt" and path.suffix.lower() == ".dll":
+                lib = ctypes.WinDLL(str(path))
+            else:
+                lib = ctypes.CDLL(str(path))
+            lib.OodleLZ_Decompress.restype = ctypes.c_int64
+            lib.OodleLZ_Decompress.argtypes = [
+                ctypes.c_char_p, ctypes.c_int64, ctypes.c_char_p, ctypes.c_int64,
+                ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_int64,
+                ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int64, ctypes.c_int,
+            ]
+        except (OSError, AttributeError) as error:
+            errors.append(f"  {path}: {error}")
+            continue
+        return lib
+    detail = "\n".join(errors) or "  (no candidate file existed)"
+    raise SystemExit(
+        "No usable Oodle library found. DCX files are Oodle Kraken and need\n"
+        "one with an OodleLZ_Decompress export:\n"
+        f"{detail}\n"
+        "On Windows it is the game's oo2core_6_win64.dll (ER_GAME_DIR).\n"
+        "On Linux set ER_OODLE_LIB to a native Oodle build, e.g.\n"
+        "  export ER_OODLE_LIB=/path/to/liboo2corelinux64.9.so"
+    )
+
+
 def _oodle_decompress(data: bytes, raw_size: int) -> bytes:
     global _oodle
     if _oodle is None:
-        _oodle = ctypes.WinDLL(str(paths.game_dir() / "oo2core_6_win64.dll"))
-        _oodle.OodleLZ_Decompress.restype = ctypes.c_int64
-        _oodle.OodleLZ_Decompress.argtypes = [
-            ctypes.c_char_p, ctypes.c_int64, ctypes.c_char_p, ctypes.c_int64,
-            ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_int64,
-            ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int64, ctypes.c_int,
-        ]
+        _oodle = _load_oodle()
     out = ctypes.create_string_buffer(raw_size)
     n = _oodle.OodleLZ_Decompress(data, len(data), out, raw_size, 1, 0, 0, None, 0, None, None, None, 0, 3)
     if n != raw_size:
