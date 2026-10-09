@@ -44,18 +44,8 @@ pub struct Options {
 }
 
 fn main() {
-    let clips = match anim::Clips::load() {
-        Ok(clips) => clips,
-        Err(error) => {
-            eprintln!(
-                "Could not load {}: {error}
-The clip file is a build leftover — the procedural animation pass replaces
-it (see the README roadmap).",
-                anim::PATH
-            );
-            std::process::exit(1);
-        }
-    };
+    // Poses are generated from the skeleton and the pose library; nothing to load.
+    let clips = anim::Clips::procedural();
     // Sounds are optional: without them the sandbox runs silent.
     let sounds = match audio::Sounds::load() {
         Ok(sounds) => Some(sounds),

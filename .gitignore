@@ -1,5 +1,4 @@
 /target
-# Built asset bins: not authored yet, replaced by the procedural pass.
-/assets/player_anims.bin
+# Built asset bins (optional at runtime; the game runs without them).
 /assets/player_sounds.bin
 /assets/sounds/

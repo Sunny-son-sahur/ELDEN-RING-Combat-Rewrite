@@ -160,21 +160,18 @@ cargo run                    # build and play
 cargo test -p tarnished-sim  # behaviour tests, headless, seconds
 ```
 
-Honest state of the world: the sim compiles, tests and runs headless today.
-The shell still looks for baked animation clips (`assets/player_anims.bin`)
-that the deleted pipeline used to produce, so `cargo run` opens and exits
-with a missing-asset message until the procedural animation pass lands —
-that pass is milestone 1 below.
+`cargo run` opens the sandbox: the character is posed entirely from code
+(`shell/src/anim.rs` generates every clip from the skeleton and a library of
+keyed poses at startup — no clip files, nothing baked). Press `Enter` for the
+demo tour.
 
 ## Roadmap
 
-1. **Procedural animation** — pose the capsule rig from code, action by
-   action, no baked clips. After this, `cargo run` plays on this box.
-2. **Front end** — loading screen into a singleplayer / multiplayer picker.
-3. **Sandbox layer** — physics props (`avian3d`), spawn menu, sandbox tools.
-4. **Multiplayer** — one machine runs the sim authoritative, others send
+1. **Front end** — loading screen into a singleplayer / multiplayer picker.
+2. **Sandbox layer** — physics props (`avian3d`), spawn menu, sandbox tools.
+3. **Multiplayer** — one machine runs the sim authoritative, others send
    inputs (`bevy_replicon`).
-5. **Shipping** — cross-compiled Windows exe, a Unity-style game folder,
+4. **Shipping** — cross-compiled Windows exe, a Unity-style game folder,
    playable through Steam/Proton on Linux.
 
 ## Layout
@@ -191,7 +188,7 @@ seconds), and `shell/` is the Bevy app that feeds it input and draws what it say
 | `sim/src/data.rs` | Action types, plus every value that is still an estimate. |
 | `sim/src/player.rs`, `sim/src/dummy.rs`, `sim/src/level.rs` | The player, the sparring dummy and the arena. |
 | `sim/src/tests.rs` | Behaviour tests; run with `cargo test`. |
-| `shell/src/rig.rs`, `shell/src/anim.rs` | The rig, and loading and playing animation clips (clip loading scheduled for replacement by the procedural pass). |
+| `shell/src/rig.rs`, `shell/src/anim.rs` | The rig, and the procedural animation it plays (skeleton + pose library, all clips generated in code at startup). |
 | `shell/src/audio.rs` | Sound playback (pipeline removed; runs silent). |
 | `shell/src/demo.rs` | The scripted demo, and a test that plays it through without a window. |
 | `shell/src/camera.rs`, `shell/src/input.rs`, `shell/src/hud.rs`, `shell/src/view.rs` | Camera, bindings, HUD, arena and dummy visuals. |
