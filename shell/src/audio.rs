@@ -1,8 +1,7 @@
-//! The player's sounds, as baked by `tools/bake_sounds.py`: per clip, the
-//! frames its sound events fire on, and per sound, the game's choice of what
-//! to play (one of several recordings, several at once), each at the level and
-//! pitch its Wwise mix gives it, varied a little every time as the game does.
-//! The recordings are `assets/sounds/<id>.ogg`.
+//! Sound events: per clip, the frames its sound events fire on, and per
+//! sound, what to play (one of several recordings, several at once), each at
+//! its level and pitch, varied a little every time. Recordings are
+//! `assets/sounds/<id>.ogg` — this project's own assets, not yet authored.
 
 use std::collections::HashMap;
 use std::fs;
@@ -259,7 +258,7 @@ mod tests {
     #[test]
     fn baked_recordings_decode() {
         let Ok(dir) = fs::read_dir("assets/sounds") else {
-            eprintln!("no assets/sounds; bake them with tools/bake_sounds.py");
+            eprintln!("no assets/sounds; this project's sounds are not authored yet");
             return;
         };
         let mut checked = 0;

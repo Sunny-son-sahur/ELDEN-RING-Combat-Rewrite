@@ -1,6 +1,6 @@
 //! Behaviour tests for the state machine. Expected numbers are the ones
-//! extracted from the game (see `extracted.rs`), so these also guard against
-//! the simulation drifting away from the data it is fed.
+//! authored in `content.rs`, so these also guard against the simulation
+//! drifting away from the data it is fed.
 
 use bevy_math::{Vec2, Vec3};
 
@@ -98,7 +98,7 @@ fn holding_dodge_sprints_and_release_does_not_roll() {
 }
 
 #[test]
-fn medium_roll_has_thirteen_iframes_and_its_extracted_distance() {
+fn medium_roll_has_thirteen_iframes_and_its_authored_distance() {
     let mut w = world();
     tap_dodge(&mut w, forward());
     let start = w.player.pos;
@@ -465,7 +465,7 @@ fn player_attack_damages_the_dummy_once_per_swing() {
 }
 
 #[test]
-fn extracted_speeds_are_the_games() {
+fn speeds_match_the_authored_table() {
     assert!((WALK_SPEED - 1.5).abs() < 0.01);
     assert!((RUN_SPEED - 4.012).abs() < 0.01);
     assert!((SPRINT_SPEED - 6.035).abs() < 0.01);
@@ -488,7 +488,7 @@ fn two_handing_the_weapon_switches_to_its_two_handed_moveset() {
     w.step(&Input { light: DOWN, ..idle() });
     let two_handed = Moveset { weapon: DEFAULT_WEAPON as u8, two_hand: true };
     assert_eq!(id(&w), Some(ActionId::Attack(two_handed, AttackKind::Light1)));
-    assert_eq!(id(&w).unwrap().def().source, "a023_032000");
+    assert_eq!(id(&w).unwrap().def().source, "light attack");
 
     // The grip cannot change in the middle of a swing.
     w.step(&Input { two_hand_right: true, ..idle() });
@@ -505,7 +505,7 @@ fn two_handing_the_left_hand_uses_the_shield_moveset() {
     assert_eq!(w.player.grip, Grip::TwoHandLeft);
     assert_eq!(w.player.moveset().info().name, "Shield");
     w.step(&Input { light: DOWN, ..idle() });
-    assert_eq!(id(&w).unwrap().def().source, "a048_032000");
+    assert_eq!(id(&w).unwrap().def().source, "light attack");
     run(&mut w, idle(), 300);
     // Going straight from one two-handed grip to the other.
     change(&mut w, Input { two_hand_right: true, ..idle() });
@@ -531,7 +531,7 @@ fn weapon_swap_cycles_through_everything_but_the_shield() {
 fn a_grip_change_takes_time_and_does_not_stop_movement() {
     let mut w = world();
     let def = SwapKind::ToTwoHandRight.def();
-    assert_eq!((def.start, def.end), ("a000_029060", "a000_029050"));
+    assert_eq!((def.start, def.end), ("grip_2h_right_start", "grip_2h_right_end"));
     assert_eq!((def.start_len, def.end_len, def.apply, def.free_from), (5.0, 17.0, 3.0, 7.0));
 
     // Running the whole time: the change is an upper-body animation.
@@ -625,8 +625,8 @@ fn light_chain_length_depends_on_the_weapon() {
         seen.iter().skip(1).position(|&kind| kind == AttackKind::Light1).unwrap() + 1
     };
     assert_eq!(chain("Longsword"), 5);
-    assert_eq!(chain("Greatsword"), 3);
-    assert_eq!(chain("Rapier"), 6);
+    assert_eq!(chain("Claymore"), 3);
+    assert_eq!(chain("Shiv"), 6);
 }
 
 #[test]
@@ -662,7 +662,7 @@ fn rolling_from_a_crouch_stays_crouched() {
     w.step(&Input { dodge: DOWN, ..forward() });
     w.step(&Input { dodge: UP, ..forward() });
     assert_eq!(id(&w), Some(ActionId::CrouchRoll(Load::Medium, Dir::Front)));
-    assert_eq!(id(&w).unwrap().def().source, "a000_327110");
+    assert_eq!(id(&w).unwrap().def().source, "crouch roll");
     let start = w.player.pos;
     run(&mut w, idle(), 160);
     assert!(action(&w).is_none());
@@ -699,8 +699,8 @@ fn hit_reaction_depends_on_the_side_and_strength_of_the_hit() {
 
     let small = ActionId::Hurt(HurtLevel::Small, Dir::Front).def();
     let middle = ActionId::Hurt(HurtLevel::Middle, Dir::Front).def();
-    assert_eq!((small.source, small.total, small.cancel_move), ("a000_005110", 34.0, 15.0));
-    assert_eq!((middle.source, middle.total, middle.cancel_move), ("a000_005200", 57.0, 28.0));
+    assert_eq!((small.source, small.total, small.cancel_move), ("flinch", 34.0, 15.0));
+    assert_eq!((middle.source, middle.total, middle.cancel_move), ("stagger", 57.0, 28.0));
 }
 
 #[test]
@@ -741,7 +741,7 @@ fn stepping_off_a_ledge_falls_and_lands_with_the_fall_landing() {
     assert_eq!(id(&w), Some(ActionId::LandFall));
     assert_eq!(w.player.pos.y, 0.0);
     let def = ActionId::LandFall.def();
-    assert_eq!((def.source, def.total, def.cancel_move), ("a000_202300", 21.0, 15.0));
+    assert_eq!((def.source, def.total, def.cancel_move), ("land, fall", 21.0, 15.0));
 }
 
 #[test]
@@ -843,13 +843,13 @@ fn dodge_and_jump_cost_what_the_game_charges() {
 #[test]
 fn multi_hit_attacks_land_and_charge_each_hit() {
     let mut w = world();
-    w.player.weapon = WEAPONS.iter().position(|info| info.name == "Twinblade").unwrap();
+    w.player.weapon = WEAPONS.iter().position(|info| info.name == "Spear").unwrap();
     w.player.grip = Grip::TwoHandRight;
     w.player.pos = Vec3::new(0.0, 0.0, 6.5);
     w.step(&Input { light: DOWN, ..idle() });
     let def = id(&w).unwrap().def();
-    assert_eq!(def.source, "a024_032000");
-    assert_eq!(def.hits.len(), 2, "a two-handed twinblade light is two cuts");
+    assert_eq!(def.source, "light attack");
+    assert_eq!(def.hits.len(), 2, "a two-handed spear light is two pokes");
     let before = w.dummy.hp;
     run(&mut w, idle(), 200);
     let dealt = before - w.dummy.hp;
@@ -857,7 +857,7 @@ fn multi_hit_attacks_land_and_charge_each_hit() {
     assert!((dealt - expected).abs() < 1e-2, "dealt {dealt}, expected {expected}");
     // Idle since: only check what the swing took, at the moment it took it.
     let mut w = world();
-    w.player.weapon = WEAPONS.iter().position(|info| info.name == "Twinblade").unwrap();
+    w.player.weapon = WEAPONS.iter().position(|info| info.name == "Spear").unwrap();
     w.player.grip = Grip::TwoHandRight;
     w.step(&Input { light: DOWN, ..idle() });
     run_to_frame(&mut w, idle(), def.hits[1].from);
@@ -874,7 +874,7 @@ fn locked_on_jumps_go_four_ways_and_keep_facing_the_target() {
     let left = Input { mv: Vec2::new(-1.0, 0.0), ..idle() };
     w.step(&Input { jump: DOWN, ..left });
     assert_eq!(id(&w), Some(ActionId::Jump(JumpKind::RunLeft)));
-    assert_eq!(id(&w).unwrap().def().source, "a000_202022");
+    assert_eq!(id(&w).unwrap().def().source, "jump, run");
     while matches!(id(&w), Some(ActionId::Jump(_))) {
         assert!(w.player.yaw.abs() < 0.3, "still facing the target, yaw {}", w.player.yaw);
         w.step(&idle());
@@ -889,7 +889,7 @@ fn locked_on_jumps_go_four_ways_and_keep_facing_the_target() {
         w.step(&left);
     }
     assert_eq!(id(&w), Some(ActionId::LandStrafe(Dir::Left)));
-    assert_eq!(id(&w).unwrap().def().source, "a000_202117");
+    assert_eq!(id(&w).unwrap().def().source, "land, strafe");
     for _ in 0..40 {
         w.step(&left);
         let to_target = (w.dummy.pos - w.player.pos).normalize();
@@ -911,7 +911,7 @@ fn a_knockdown_throws_you_back_and_you_roll_to_get_up() {
     let knocked = ActionId::Hurt(HurtLevel::Knockdown, Dir::Front);
     assert_eq!(id(&w), Some(knocked));
     let def = knocked.def();
-    assert_eq!((def.source, def.total, def.iframes, def.cancel_dodge), ("a000_005400", 105.0, (0.0, 59.0), 36.0));
+    assert_eq!((def.source, def.total, def.iframes, def.cancel_dodge), ("knockdown", 105.0, (0.0, 59.0), 36.0));
 
     // Mash roll throughout: it only comes out once the get-up allows it.
     let tap = Button { held: false, pressed: true, released: true };
@@ -1015,7 +1015,7 @@ fn a_swing_only_hits_when_the_blade_reaches_the_target() {
 
     // Standing beside the swing's path is not enough: a thrust past the dummy misses.
     let mut w = world();
-    w.player.weapon = WEAPONS.iter().position(|info| info.name == "Rapier").unwrap();
+    w.player.weapon = WEAPONS.iter().position(|info| info.name == "Spear").unwrap();
     w.player.pos = Vec3::new(2.0, 0.0, 6.5);
     w.step(&Input { light: DOWN, ..idle() });
     run(&mut w, idle(), 120);
@@ -1046,12 +1046,12 @@ const GUARD_TAP: Input = Input {
 #[test]
 fn a_weapon_in_the_left_hand_attacks_on_the_left_button() {
     let mut w = world();
-    w.player.left = weapon_named("Dagger");
+    w.player.left = weapon_named("Shiv");
     w.player.pos = Vec3::new(0.0, 0.0, 6.6);
     w.step(&GUARD_TAP);
-    let left = Moveset { weapon: weapon_named("Dagger") as u8, two_hand: false };
+    let left = Moveset { weapon: weapon_named("Shiv") as u8, two_hand: false };
     assert_eq!(id(&w), Some(ActionId::Attack(left, AttackKind::LeftLight1)));
-    assert_eq!(id(&w).unwrap().def().source, "a020_035000");
+    assert_eq!(id(&w).unwrap().def().source, "left-hand attack");
     assert!(!w.player.guarding, "a left-hand weapon does not guard");
     // It is the dagger in the left hand that does the damage.
     let before = w.dummy.hp;
@@ -1073,7 +1073,7 @@ fn the_same_class_in_each_hand_fights_as_a_pair() {
     w.player.pos = Vec3::new(0.0, 0.0, 6.5);
     w.step(&GUARD_TAP);
     let def = id(&w).unwrap().def();
-    assert_eq!((def.name, def.source), ("PairedLight1", "a023_034000"));
+    assert_eq!((def.name, def.source), ("paired attack", "paired attack"));
     assert_eq!(def.hits.len(), 2, "one hit from each sword");
     let before = w.dummy.hp;
     run(&mut w, idle(), 200);
@@ -1089,7 +1089,7 @@ fn the_same_class_in_each_hand_fights_as_a_pair() {
 
     // Different classes do not pair: the left one just attacks on its own.
     let mut w = world();
-    w.player.left = weapon_named("Club");
+    w.player.left = weapon_named("Cudgel");
     assert!(!w.player.paired());
 
     // After a roll, and out of a sprint, the pair has its own attacks.
@@ -1122,7 +1122,7 @@ fn every_weapon_class_has_its_left_hand_and_paired_attacks() {
         assert!(paired.hits.len() >= 2, "{} paired", info.name);
         assert!(moveset.air_paired().is_some(), "{} paired jump attack", info.name);
     }
-    assert_eq!(without_pair, ["Curved Greatsword", "Torch"]);
+    assert_eq!(without_pair, ["Torch"]);
 }
 
 #[test]
@@ -1165,7 +1165,7 @@ fn a_two_handed_weapon_guards() {
 
     // A weapon in the left hand, held one-handed, does not.
     let mut w = world();
-    w.player.left = weapon_named("Club");
+    w.player.left = weapon_named("Cudgel");
     run(&mut w, guard, 20);
     assert!(!w.player.guard_up());
 }

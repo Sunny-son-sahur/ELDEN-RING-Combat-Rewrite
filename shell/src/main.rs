@@ -49,8 +49,8 @@ fn main() {
         Err(error) => {
             eprintln!(
                 "Could not load {}: {error}
-Run it from the project folder, and bake the animations first with:
-    python tools/bake_anims.py",
+The clip file is a build leftover — the procedural animation pass replaces
+it (see the README roadmap).",
                 anim::PATH
             );
             std::process::exit(1);
@@ -60,8 +60,7 @@ Run it from the project folder, and bake the animations first with:
     let sounds = match audio::Sounds::load() {
         Ok(sounds) => Some(sounds),
         Err(error) => {
-            eprintln!("No sound ({}: {error}). Bake it with:
-    python tools/bake_sounds.py", audio::PATH);
+            eprintln!("No sound ({}: {error}); the sandbox runs silent for now.", audio::PATH);
             None
         }
     };

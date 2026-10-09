@@ -665,13 +665,14 @@ fn script() -> Vec<Step> {
         free,
         Wait(15),
     ]);
+    // Every weapon that pairs: all six non-shield, non-torch classes.
     let pairs: [(&str, fn(&mut World)); 6] = [
-        ("Paired greatswords", |w| pair(w, "Greatsword")),
-        ("Paired twinblades", |w| pair(w, "Twinblade")),
-        ("Paired great hammers", |w| pair(w, "Great Hammer")),
-        ("Paired halberds", |w| pair(w, "Halberd")),
-        ("Paired claws", |w| pair(w, "Claw")),
-        ("Paired whips", |w| pair(w, "Whip")),
+        ("Paired longswords", |w| pair(w, "Longsword")),
+        ("Paired claymores", |w| pair(w, "Claymore")),
+        ("Paired cudgels", |w| pair(w, "Cudgel")),
+        ("Paired spears", |w| pair(w, "Spear")),
+        ("Paired fists", |w| pair(w, "Fist")),
+        ("Paired shivs", |w| pair(w, "Shiv")),
     ];
     for (caption, equip) in pairs {
         s.extend([Do(refresh), Range(2.4), Do(equip), Say(caption), Wait(30), Range(1.5), Attack(Btn::Guard), Attack(Btn::Guard), free]);

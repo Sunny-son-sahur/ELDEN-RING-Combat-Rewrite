@@ -1,6 +1,6 @@
-//! Loader for `assets/player_anims.bin`, the player's real animations as baked
-//! by `tools/bake_anims.py`: per frame, model-space joint positions plus axes
-//! for the joints whose orientation matters.
+//! Loader for `assets/player_anims.bin`: per frame, model-space joint
+//! positions plus axes for the joints whose orientation matters. The file is
+//! a build leftover — the procedural animation pass replaces this loader.
 
 use std::collections::HashMap;
 use std::fs;

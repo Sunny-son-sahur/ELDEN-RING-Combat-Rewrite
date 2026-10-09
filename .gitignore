@@ -1,10 +1,5 @@
 /target
-__pycache__/
-# Generated from the game's own files by tools/setup.py: regenerate locally,
-# do not redistribute.
+# Built asset bins: not authored yet, replaced by the procedural pass.
 /assets/player_anims.bin
 /assets/player_sounds.bin
 /assets/sounds/
-/sim/src/extracted.rs
-# Default location for unpacked game files (see README).
-/er-files/

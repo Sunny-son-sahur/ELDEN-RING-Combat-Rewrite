@@ -2,18 +2,17 @@
 //!
 //! Everything about individual actions (durations, i-frames, cancel windows,
 //! hit windows, root motion, stamina costs, motion values) and the locomotion
-//! speeds comes from `extracted.rs`, which `tools/extract.py` generates from
-//! the game's own files. Timings are animation frames at 30 fps; the
-//! simulation ticks at 60 Hz, so one tick is half a frame.
+//! speeds comes from `content.rs` — hand-authored game data, written in Rust
+//! and yours to tune. Timings are animation frames at 30 fps; the simulation
+//! ticks at 60 Hz, so one tick is half a frame.
 //!
-//! What is still an estimate is marked ESTIMATE below. Those values live in
-//! the player script's shared constants or in engine code, which the
-//! extractor does not read.
+//! What is still an estimate is marked ESTIMATE below. Those values were
+//! never read from anywhere — they are chosen here.
 
 use bevy_math::Vec3;
 
-use super::extracted;
-pub use super::extracted::{
+use super::content;
+pub use super::content::{
     CROUCH_RUN_SPEED, CROUCH_WALK_SPEED, DEFAULT_WEAPON, FIST, MAX_HP, MAX_STAMINA, RUN_BACK_SPEED, RUN_SIDE_SPEED, RUN_SPEED, SHIELD,
     SPRINT_SPEED, TORCH, WALK_SPEED, WEAPONS,
 };
@@ -27,7 +26,7 @@ pub const DF: f32 = ANIM_FPS * DT;
 // --- Character (ESTIMATE) --------------------------------------------------
 
 // Max HP and stamina are the starting class's, read from the game's own
-// stat curves; see `extracted`.
+// stat curves; see `content`.
 pub const STAMINA_REGEN: f32 = 45.0;
 /// Regen multiplier while the guard is raised.
 pub const GUARD_REGEN_MULT: f32 = 0.5;
@@ -44,7 +43,7 @@ pub const ROLL_COST: f32 = 12.0;
 pub const BACKSTEP_COST: f32 = 8.0;
 pub const JUMP_COST: f32 = 10.0;
 
-// --- Locomotion (ESTIMATE, speeds themselves are extracted) -----------------
+// --- Locomotion (ESTIMATE, speeds themselves are content) -----------------
 
 pub const ACCEL: f32 = 26.0;
 pub const DECEL: f32 = 32.0;
@@ -65,7 +64,7 @@ pub const SPRINT_HOLD_FRAMES: f32 = 10.0;
 /// Height the character steps up or down without leaving the ground.
 pub const STEP_HEIGHT: f32 = 0.35;
 
-// --- Falling (ESTIMATE; the jump arc itself is extracted) -------------------
+// --- Falling (ESTIMATE; the jump arc itself is content) -------------------
 
 pub const GRAVITY: f32 = 18.0;
 pub const TERMINAL_VELOCITY: f32 = 40.0;
@@ -193,7 +192,7 @@ pub enum SwapKind {
 
 impl SwapKind {
     pub fn def(self) -> SwapDef {
-        extracted::swap(self)
+        content::swap(self)
     }
 }
 
@@ -226,7 +225,7 @@ pub struct Moveset {
 
 impl Moveset {
     pub fn attack(self, kind: AttackKind) -> Option<ActionDef> {
-        extracted::attack(self.weapon as usize, self.two_hand, kind)
+        content::attack(self.weapon as usize, self.two_hand, kind)
     }
 
     pub fn has(self, kind: AttackKind) -> bool {
@@ -234,12 +233,12 @@ impl Moveset {
     }
 
     pub fn air(self, heavy: bool) -> Option<AirAttackDef> {
-        extracted::air_attack(self.weapon as usize, self.two_hand, heavy)
+        content::air_attack(self.weapon as usize, self.two_hand, heavy)
     }
 
     /// The jump attack with a weapon in each hand.
     pub fn air_paired(self) -> Option<AirAttackDef> {
-        extracted::air_paired(self.weapon as usize)
+        content::air_paired(self.weapon as usize)
     }
 
     pub fn info(self) -> &'static WeaponInfo {
@@ -476,13 +475,13 @@ pub enum ActionId {
 
 impl ActionId {
     pub fn def(self) -> ActionDef {
-        let extracted = match self {
+        let content = match self {
             ActionId::Attack(moveset, kind) => moveset.attack(kind),
-            _ => extracted::base(self),
+            _ => content::base(self),
         };
         // Attacks are only ever built for kinds their moveset has, and every
-        // other action has an entry, so a miss here is a bug in the generator.
-        extracted.unwrap_or_else(|| panic!("no extracted data for {self:?}"))
+        // other action has an entry, so a miss here is a bug in content.rs.
+        content.unwrap_or_else(|| panic!("no content data for {self:?}"))
     }
 
     /// Stamina taken when the action starts, on top of anything its hit costs.

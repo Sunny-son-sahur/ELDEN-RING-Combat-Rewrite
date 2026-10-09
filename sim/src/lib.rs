@@ -7,7 +7,7 @@ use bevy_math::Vec3;
 
 pub mod data;
 pub mod dummy;
-pub mod extracted;
+pub mod content;
 pub mod level;
 pub mod player;
 #[cfg(test)]
