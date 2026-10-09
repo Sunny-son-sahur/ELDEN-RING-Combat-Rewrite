@@ -1,0 +1,9 @@
+[package]
+name = "tarnished-launcher"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Library launcher: your games in one grid, add non-launcher games like Steam does."
+
+[dependencies]
+bevy = "0.19.1"

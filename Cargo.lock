@@ -4871,6 +4871,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "tarnished-launcher"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+]
+
+[[package]]
 name = "tarnished-sim"
 version = "0.1.0"
 dependencies = [
