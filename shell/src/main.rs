@@ -11,8 +11,12 @@ mod camera;
 mod demo;
 mod hud;
 mod input;
+mod menu;
+mod props;
 mod rig;
 mod view;
+
+pub use menu::Phase;
 
 use tarnished_sim::level::Level;
 use tarnished_sim::player::Input as SimInput;
@@ -44,8 +48,6 @@ pub struct Options {
 }
 
 fn main() {
-    // Poses are generated from the skeleton and the pose library; nothing to load.
-    let clips = anim::Clips::procedural();
     // Sounds are optional: without them the sandbox runs silent.
     let sounds = match audio::Sounds::load() {
         Ok(sounds) => Some(sounds),
@@ -66,37 +68,53 @@ fn main() {
             }),
             ..default()
         }))
+        .add_plugins(avian3d::prelude::PhysicsPlugins::default())
         .insert_resource(Time::<Fixed>::from_hz(tarnished_sim::data::TICK_HZ))
         .insert_resource(ClearColor(Color::srgb(0.07, 0.08, 0.1)))
-        .insert_resource(clips)
         .insert_resource(Sim(tarnished_sim::World::new(Level::arena())))
         .insert_resource(Options { show_iframes: true, show_help: true })
         .init_resource::<Pending>()
         .init_resource::<Rendered>()
         .init_resource::<camera::CamRig>()
         .init_resource::<demo::Demo>()
-        .add_systems(Startup, (view::setup, rig::setup, hud::setup, camera::setup))
+        .init_resource::<props::Held>()
+        // The rig and its clips are built by the loading screen, not here.
+        .add_systems(Startup, (view::setup, hud::setup, camera::setup, menu::setup).chain())
+        // Nothing reads the mouse or steps the world until a mode is picked.
         .add_systems(
             RunFixedMainLoop,
             (input::grab_cursor, camera::look, input::gather)
                 .chain()
+                .run_if(in_game)
                 .in_set(RunFixedMainLoopSystems::BeforeFixedMainLoop),
         )
-        .add_systems(FixedUpdate, (demo::drive, tick).chain())
+        .add_systems(FixedUpdate, (demo::drive, tick).chain().run_if(in_game))
         .add_systems(
             Update,
             (
-                demo::control,
+                demo::control.run_if(in_game),
                 interpolate,
-                input::debug_keys,
-                rig::animate,
-                audio::play,
+                input::debug_keys.run_if(in_game),
+                rig::animate.run_if(rig_ready),
+                audio::play.run_if(rig_ready),
                 view::animate_dummy,
                 view::draw_grid,
                 camera::follow,
                 hud::update,
             )
                 .chain(),
+        )
+        .add_systems(
+            Update,
+            (
+                menu::screen,
+                menu::loader,
+                menu::progress_ui,
+                menu::clicks,
+                menu::hover,
+                props::follow_player.run_if(in_game),
+                props::grab_keys.run_if(in_game).chain(),
+            ),
         )
         .run();
 }
@@ -136,4 +154,15 @@ fn interpolate(sim: Res<Sim>, time: Res<Time<Fixed>>, mut rendered: ResMut<Rende
     rendered.alpha = alpha;
     rendered.pos = rendered.prev_pos.lerp(player.pos, alpha);
     rendered.yaw = rendered.prev_yaw + tarnished_sim::angle_diff(rendered.prev_yaw, player.yaw) * alpha;
+}
+
+/// The game proper only runs in [`Phase::Game`].
+fn in_game(phase: Res<Phase>) -> bool {
+    *phase == Phase::Game
+}
+
+/// The rig animation system needs the clips and the rig, which the loading
+/// screen builds partway through. Before that it simply has nothing to say.
+fn rig_ready(clips: Option<Res<anim::Clips>>, rig: Option<Res<rig::Rig>>) -> bool {
+    clips.is_some() && rig.is_some()
 }

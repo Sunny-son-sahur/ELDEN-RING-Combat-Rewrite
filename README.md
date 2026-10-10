@@ -160,25 +160,32 @@ cargo run                    # build and play
 cargo test -p tarnished-sim  # behaviour tests, headless, seconds
 ```
 
-`cargo run` opens the sandbox: the character is posed entirely from code
-(`shell/src/anim.rs` generates every clip from the skeleton and a library of
-keyed poses at startup — no clip files, nothing baked). Press `Enter` for the
-demo tour.
+`cargo run` opens the title screen: pick **Singleplayer** and a loading
+screen does real work in stages (bake the clips, build the rig, place the
+props, settle the physics) before dropping you in the arena. Press `Enter`
+for the demo tour. The character is posed entirely from code —
+`shell/src/anim.rs` generates every clip from the skeleton and a library of
+keyed poses, no clip files, nothing baked. Set `TARNISHED_BOOT=game` to skip
+the menu (used by automated runs).
 
 ## Roadmap
 
-1. **Front end** — loading screen into a singleplayer / multiplayer picker.
-2. **Sandbox layer** — physics props (`avian3d`), spawn menu, sandbox tools.
+1. ~~Front end~~ — title screen, loading screen, singleplayer / multiplayer
+   picker (**done**).
+2. ~~Sandbox layer~~ — physics props with `avian3d`: crates and balls that
+   stack, roll, can be picked up with `E` and thrown (**done**; spawn menu and
+   sandbox tools still to come).
 3. **Multiplayer** — one machine runs the sim authoritative, others send
-   inputs (`bevy_replicon`).
+   inputs (`bevy_replicon`). The Multiplayer button is waiting for it.
 4. **Shipping** — cross-compiled Windows exe, a Unity-style game folder,
    playable through Steam/Proton on Linux.
 
 ## Layout
 
-The workspace is two crates: `sim/` holds the whole game with no engine types (it
+The workspace is three crates: `sim/` holds the whole game with no engine types (it
 depends on nothing but `bevy_math`, so `cargo test -p tarnished-sim` runs headless in
-seconds), and `shell/` is the Bevy app that feeds it input and draws what it says.
+seconds), `shell/` is the Bevy app that feeds it input and draws what it says, and
+`launcher/` is the setup wizard and Play button that will ship in front of the game.
 `cargo run` from the project folder runs the shell.
 
 | Path | What it is |
@@ -192,6 +199,9 @@ seconds), and `shell/` is the Bevy app that feeds it input and draws what it say
 | `shell/src/audio.rs` | Sound playback (pipeline removed; runs silent). |
 | `shell/src/demo.rs` | The scripted demo, and a test that plays it through without a window. |
 | `shell/src/camera.rs`, `shell/src/input.rs`, `shell/src/hud.rs`, `shell/src/view.rs` | Camera, bindings, HUD, arena and dummy visuals. |
+| `shell/src/menu.rs` | Title screen, singleplayer/multiplayer picker, staged loading screen. |
+| `shell/src/props.rs` | `avian3d` physics: world colliders, the player's push body, crates and balls you can grab (`E`) and throw (click). |
+| `launcher/` | First-run setup wizard (OS, distro/Windows version, shortcuts, dependency command) and Play button. |
 
 ## License
 

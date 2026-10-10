@@ -161,7 +161,7 @@ fn create_shortcuts(wizard: &mut Wizard) {
     use std::os::unix::fs::PermissionsExt;
     let dir = home().join(".local/share/applications");
     if std::fs::create_dir_all(&dir).is_err() {
-        wizard.notes.push("No ~/.local/share/applications — shortcut skipped".to_string());
+        wizard.notes.push("No ~/.local/share/applications - shortcut skipped".to_string());
         return;
     }
     let game = game_binary().unwrap_or_else(|| PathBuf::from("tarnished"));
@@ -315,7 +315,7 @@ fn setup(mut commands: Commands) {
         ChildOf(root),
     ));
     commands.spawn((
-        Text::new("launcher — one-time setup"),
+        Text::new("launcher - one-time setup"),
         font(14.0),
         TextColor(DIM),
         Node { position_type: PositionType::Absolute, top: px(96.0), ..default() },
@@ -402,7 +402,7 @@ fn build_screen(
             heading(&mut commands, col, "Which distribution?");
             if let Some((label, distro)) = detect_distro() {
                 note(&mut commands, col, &format!("detected: {label}"), ACCENT);
-                card(&mut commands, col, Action::PickDistro(distro), &format!("{label} — that's me"), "", 340.0);
+                card(&mut commands, col, Action::PickDistro(distro), &format!("{label} - that's me"), "", 340.0);
             }
             for (distro, title, sub) in [
                 (Distro::Fedora, "Fedora / Nobara", "dnf"),
@@ -431,10 +431,10 @@ fn build_screen(
                 if !wizard.ran_command {
                     card(&mut commands, col, Action::Install, "Install them now", "opens a terminal", 340.0);
                 } else {
-                    note(&mut commands, col, "install started — watch the terminal", GREEN);
+                    note(&mut commands, col, "install started - watch the terminal", GREEN);
                 }
             }
-            card(&mut commands, col, Action::Play, "Done — take me in", "", 340.0);
+            card(&mut commands, col, Action::Play, "Done - take me in", "", 340.0);
         }
         Screen::Ready => {
             let col = column(&mut commands, root);
@@ -566,7 +566,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Tarnished — Setup".into(),
+                title: "Tarnished - Setup".into(),
                 resolution: (960, 580).into(),
                 ..default()
             }),

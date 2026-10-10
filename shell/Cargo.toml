@@ -7,4 +7,5 @@ description = "The Bevy shell: feeds the sim input, draws what it says, plays th
 
 [dependencies]
 bevy = "0.19.1"
+avian3d = "0.7.0"
 tarnished-sim = { path = "../sim" }
